@@ -30,10 +30,27 @@ class AirTripProvider(BaseProvider):
             weight_airlines=weight_airlines
         )
 
+        if (
+                flight_parameters and
+                "OD" in flight_parameters and 
+                len(flight_parameters["OD"][list(flight_parameters["OD"])[0]][0]) == 1
+            ):
+                # Flatten the origin_destination dictionary into a list of tuples
+
+                combinations = []
+                for origin, destinations in flight_parameters["OD"].items():
+                    for destination in destinations:
+                        combinations.append((origin, destination[0]))
+
+                n_trip = len(combinations)
+
         trips = []
-        for _ in range(n_trip):
+        for i in range(n_trip):
             # create a flight
-            if flight_parameters:
+            if combinations:
+                # no probability
+                trip = _fake.flight(od_airports=combinations[i])
+            elif flight_parameters:
                 trip = _fake.flight(**flight_parameters)
             else:
                 trip = _fake.flight()

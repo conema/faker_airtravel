@@ -160,26 +160,11 @@ class AirTravelProvider(BaseProvider):
         ).name
 
         return airline
-
-    def flight(
-        self,
-        OD: Optional[dict[str, Union[list[str], OrderedDict[str, float]]]]=None,
-        OD_times: Optional[dict[str, dict[str, float]]]=None,
-        start_date="-30y",
-        end_date="now"
-    ) -> dict:
-        """Create a random flight
-
-            :sample: OD="ABQ": OrderedDict([
-                            ("ADZ", 1)
-                        ]),
-                        "ADZ": OrderedDict([
-                            ("ABQ", 0.5),
-                            ("ACE", 0.5)
-                        ])
-        """
-        
-        # Origin Destination choice
+    
+    def origin_destination(
+            self,
+            OD: dict[str, Union[list[str], OrderedDict[str, float]]]=None
+    ):    
         if OD:
             # Select randomly origin from OD
             origin = self.airport_object(list(OD.keys()))
@@ -216,6 +201,34 @@ class AirTravelProvider(BaseProvider):
                 unique=True,
                 length=2
             )
+
+        return origin, destination
+
+    def flight(
+        self,
+        OD: Optional[dict[str, Union[list[str], OrderedDict[str, float]]]]=None,
+        OD_times: Optional[dict[str, dict[str, float]]]=None,
+        od_airports: Optional[tuple[str]]=None,
+        start_date="-30y",
+        end_date="now"
+    ) -> dict:
+        """Create a random flight
+
+            :sample: OD="ABQ": OrderedDict([
+                            ("ADZ", 1)
+                        ]),
+                        "ADZ": OrderedDict([
+                            ("ABQ", 0.5),
+                            ("ACE", 0.5)
+                        ])
+        """
+        # Origin and destination choice
+        if od_airports:
+            origin, destination = od_airports
+            origin = self.airport_object(origin)
+            destination = self.airport_object(destination)
+        else:
+            origin, destination = self.origin_destination(OD)
         
         # Airline choice
         airline = self.airline()
