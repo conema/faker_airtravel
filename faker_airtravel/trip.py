@@ -15,6 +15,7 @@ class AirTripProvider(BaseProvider):
         self,
         n_trip: int=5,
         max_reservation_flight: int=150,
+        min_reservation_flight: int=50,
         flight_parameters: Optional[dict]=None,
         reservations_parameters: dict={},
         airport_list: Optional[list[dict]]=None,
@@ -61,7 +62,7 @@ class AirTripProvider(BaseProvider):
 
             reservations = []
             n_reservation = _fake.random_int(
-                min=1,
+                min=min_reservation_flight,
                 max=max_reservation_flight
             )
 
